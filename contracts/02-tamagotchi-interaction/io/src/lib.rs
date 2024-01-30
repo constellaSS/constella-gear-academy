@@ -41,6 +41,9 @@ pub enum TmgEvent {
     Name(String),
     Age(u64),
     // TODO: 3️⃣ Add new events
+    Fed,
+    Entertained,
+    Slept,
 }
 
 pub struct ProgramMetadata;
