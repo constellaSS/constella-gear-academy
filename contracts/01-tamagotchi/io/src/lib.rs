@@ -9,9 +9,8 @@ use scale_info::TypeInfo;
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub struct Tamagotchi {
-    // TODO: 1️⃣ Add `name` and `age` fields
     pub name: String,
-    pub date_of_birth: u64
+    pub date_of_birth: u64,
 }
 
 #[derive(Encode, Decode, TypeInfo)]
