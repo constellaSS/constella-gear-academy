@@ -1,8 +1,7 @@
 #![no_std]
-
-use gstd::{exec, msg};
 #[allow(unused_imports)]
-use gstd::prelude::*;
+
+use gstd::{exec, msg, prelude::*};
 use tamagotchi_io::Tamagotchi;
 
 static mut TAMAGOTCHI: Option<Tamagotchi> = None;
