@@ -45,4 +45,10 @@ extern fn handle() {
 #[no_mangle]
 extern fn state() {
     // TODO: 7️⃣ Return the Tamagotchi state
+    let tmg = unsafe {
+        TAMAGOTCHI
+            .as_ref()
+            .expect("The contract is not initialized")
+    };
+    msg::reply(tmg, 0).expect("Failed to share state");
 }
