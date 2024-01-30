@@ -10,12 +10,11 @@ static mut TAMAGOTCHI: Option<Tamagotchi> = None;
 #[no_mangle]
 extern fn init() {
     // TODO: 5️⃣ Initialize the Tamagotchi program
-    let name: String = msg::load()
-        .expect("Can't decode the init message");
+    let name: String = msg::load().expect("Can't decode the init message");
 
     let tamagotchi = Tamagotchi {
         name,
-        date_of_birth: exec::block_timestamp()
+        date_of_birth: exec::block_timestamp(),
     };
 
     unsafe {
