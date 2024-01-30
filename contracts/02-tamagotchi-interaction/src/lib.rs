@@ -42,33 +42,33 @@ extern fn handle() {
     };
     match input_msg {
         TmgAction::Name => {
-            msg::reply(TmgEvent::Name(tmg.name.clone()), 0).expect("Name not loaded correctly");
+            msg::reply(TmgEvent::Name(tmg.name.clone()), 0).expect("Error replying to the Name action");
         }
         TmgAction::Age => {
             msg::reply(
                 TmgEvent::Age(exec::block_timestamp().saturating_sub(tmg.date_of_birth)),
                 0,
             )
-            .expect("Age not loaded correctly");
+            .expect("Error replying to the Age action");
         }
         // TODO: 5️⃣ Add new logic for calculating the `fed`, `entertained` and `slept` levels
         TmgAction::Sleep => {
             tmg.update_slept();
-            tmg.slept = tmg.slept_block.saturating_add(FILL_PER_SLEEP);
+            tmg.slept = tmg.slept.saturating_add(FILL_PER_SLEEP);
             tmg.slept_block = exec::block_height() as u64;
-            msg::reply(TmgEvent::Slept, 0).expect("Not slept correctly");
+            msg::reply(TmgEvent::Slept, 0).expect("Error replying to the Sleep action");
         }
         TmgAction::Feed => {
             tmg.update_fed();
             tmg.fed = tmg.fed.saturating_add(FILL_PER_FEED);
             tmg.fed_block = exec::block_height() as u64;
-            msg::reply(TmgEvent::Fed, 0).expect("Not fed correctly");
+            msg::reply(TmgEvent::Fed, 0).expect("Error replying to the Feed action");
         }
         TmgAction::Entertain => {
             tmg.update_entertained();
-            tmg.entertained = tmg.entertained.saturating_add(FILL_PER_FEED);
+            tmg.entertained = tmg.entertained.saturating_add(FILL_PER_ENTERTAINMENT);
             tmg.entertained_block = exec::block_height() as u64;
-            msg::reply(TmgEvent::Entertained, 0).expect("Not entertained correctly");
+            msg::reply(TmgEvent::Entertained, 0).expect("Error replying to the Entertain action");
         }
     }
 }
