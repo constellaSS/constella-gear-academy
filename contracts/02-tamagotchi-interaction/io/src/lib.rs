@@ -28,6 +28,9 @@ pub enum TmgAction {
     Name,
     Age,
     // TODO: 2️⃣ Add new actions
+    Feed,
+    Entertain,
+    Sleep,
 }
 
 #[derive(Encode, Decode, TypeInfo)]
