@@ -7,9 +7,6 @@ use tamagotchi_interaction_io::{Tamagotchi, TmgAction, TmgEvent};
 static mut TAMAGOTCHI: Option<Tamagotchi> = None;
 
 // TODO: 4️⃣ Define constants
-const HUNGER_PER_BLOCK: u64 = 1;
-const BOREDOM_PER_BLOCK: u64 = 2;
-const ENERGY_PER_BLOCK: u64 = 2;
 const FILL_PER_FEED: u64 = 1000;
 const FILL_PER_ENTERTAINMENT: u64 = 1000;
 const FILL_PER_SLEEP: u64 = 1000;
@@ -54,11 +51,26 @@ extern fn handle() {
             )
             .expect("Age not loaded correctly");
         }
-        TmgAction::Sleep => {}
-        TmgAction::Feed => {}
-        TmgAction::Entertain => {}
+        // TODO: 5️⃣ Add new logic for calculating the `fed`, `entertained` and `slept` levels
+        TmgAction::Sleep => {
+            tmg.update_slept();
+            tmg.slept_block += FILL_PER_SLEEP;
+            tmg.slept_block = exec::block_height() as u64;
+            msg::reply(TmgEvent::Slept, 0).expect("Not slept correctly");
+        }
+        TmgAction::Feed => {
+            tmg.update_fed();
+            tmg.fed += FILL_PER_FEED;
+            tmg.fed_block = exec::block_height() as u64;
+            msg::reply(TmgEvent::Fed, 0).expect("Not fed correctly");
+        }
+        TmgAction::Entertain => {
+            tmg.update_entertained();
+            tmg.entertained += FILL_PER_ENTERTAINMENT;
+            tmg.entertained_block = exec::block_height() as u64;
+            msg::reply(TmgEvent::Entertained, 0).expect("Not entertained correctly");
+        }
     }
-    // TODO: 5️⃣ Add new logic for calculating the `fed`, `entertained` and `slept` levels
 }
 
 #[no_mangle]

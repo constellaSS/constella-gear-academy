@@ -1,7 +1,11 @@
 #![no_std]
 
 use gmeta::{In, InOut, Metadata, Out};
-use gstd::{prelude::*, ActorId};
+use gstd::{exec, prelude::*, ActorId};
+
+const HUNGER_PER_BLOCK: u64 = 1;
+const BOREDOM_PER_BLOCK: u64 = 2;
+const ENERGY_PER_BLOCK: u64 = 2;
 
 #[derive(Default, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
@@ -18,6 +22,27 @@ pub struct Tamagotchi {
     pub entertained_block: u64,
     pub slept: u64,
     pub slept_block: u64,
+}
+
+impl Tamagotchi {
+    pub fn update_slept(&mut self) {
+        let _ = self
+            .slept
+            .saturating_sub(self.slept_block.saturating_sub(exec::block_height() as u64))
+            * ENERGY_PER_BLOCK;
+    }
+    pub fn update_entertained(&mut self) {
+        let _ = self.entertained.saturating_sub(
+            self.entertained_block
+                .saturating_sub(exec::block_height() as u64),
+        ) * BOREDOM_PER_BLOCK;
+    }
+    pub fn update_fed(&mut self) {
+        let _ = self
+            .fed
+            .saturating_sub(self.fed_block.saturating_sub(exec::block_height() as u64))
+            * HUNGER_PER_BLOCK;
+    }
 }
 
 #[derive(Encode, Decode, TypeInfo)]
