@@ -1,6 +1,6 @@
 #![no_std]
-#[allow(unused_imports)]
 
+#[allow(unused_imports)]
 use gstd::{exec, msg, prelude::*};
 use tamagotchi_io::Tamagotchi;
 
