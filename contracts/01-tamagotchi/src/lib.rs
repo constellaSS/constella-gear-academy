@@ -17,9 +17,7 @@ extern fn init() {
         date_of_birth: exec::block_timestamp(),
     };
 
-    unsafe {
-        TAMAGOTCHI = Some(tamagotchi)
-    }
+    unsafe { TAMAGOTCHI = Some(tamagotchi) }
 }
 
 #[no_mangle]
