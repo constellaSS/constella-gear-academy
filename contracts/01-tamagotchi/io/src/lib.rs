@@ -9,6 +9,7 @@ use scale_info::TypeInfo;
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub struct Tamagotchi {
+    // TODO: 1️⃣ Add `name` and `age` fields
     pub name: String,
     pub date_of_birth: u64,
 }
@@ -27,6 +28,8 @@ pub enum TmgAction {
 #[scale_info(crate = gstd::scale_info)]
 pub enum TmgEvent {
     // TODO: 3️⃣ Add `Name` and `Age` events that return the name and age
+    Name(String),
+    Age(u64),
 }
 
 pub struct ProgramMetadata;
