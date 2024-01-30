@@ -34,4 +34,18 @@ fn interaction_test() {
     let _program = Program::current(&sys);
 
     // TODO: 6️⃣ Test new functionality
+    let res = _program.send(2, String::from("Tamagotchi Name"));
+    assert!(!res.main_failed());
+
+    let res = _program.send(2, TmgAction::Feed);
+    let expected_log = Log::builder().dest(2).payload(TmgEvent::Fed);
+    assert!(res.contains(&expected_log));
+
+    let res = _program.send(2, TmgAction::Entertain);
+    let expected_log = Log::builder().dest(2).payload(TmgEvent::Entertained);
+    assert!(res.contains(&expected_log));
+
+    let res = _program.send(2, TmgAction::Sleep);
+    let expected_log = Log::builder().dest(2).payload(TmgEvent::Slept);
+    assert!(res.contains(&expected_log));
 }
