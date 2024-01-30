@@ -1,11 +1,26 @@
 #![no_std]
 
+use gstd::{exec, msg};
 #[allow(unused_imports)]
 use gstd::prelude::*;
+use tamagotchi_io::Tamagotchi;
+
+static mut TAMAGOTCHI: Option<Tamagotchi> = None;
 
 #[no_mangle]
 extern fn init() {
     // TODO: 5️⃣ Initialize the Tamagotchi program
+    let name: String = msg::load()
+        .expect("Can't decode the init message");
+
+    let tamagotchi = Tamagotchi {
+        name,
+        date_of_birth: exec::block_timestamp()
+    };
+
+    unsafe {
+        TAMAGOTCHI = Some(tamagotchi)
+    }
 }
 
 #[no_mangle]
