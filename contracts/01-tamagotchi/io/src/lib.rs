@@ -1,7 +1,7 @@
 #![no_std]
 
 use codec::{Decode, Encode};
-use gmeta::Metadata;
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::prelude::*;
 use scale_info::TypeInfo;
 
@@ -36,9 +36,9 @@ pub struct ProgramMetadata;
 
 // TODO: 4️⃣ Fill `Init`, `Handle`, and `State` types
 impl Metadata for ProgramMetadata {
-    type Init = ();
-    type Handle = ();
-    type State = ();
+    type Init = In<String>;
+    type Handle = InOut<TmgAction, TmgEvent>;
+    type State = Out<Tamagotchi>;
     type Reply = ();
     type Others = ();
     type Signal = ();
