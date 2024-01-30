@@ -54,19 +54,19 @@ extern fn handle() {
         // TODO: 5️⃣ Add new logic for calculating the `fed`, `entertained` and `slept` levels
         TmgAction::Sleep => {
             tmg.update_slept();
-            tmg.slept_block += FILL_PER_SLEEP;
+            let _ = tmg.slept_block.saturating_add(FILL_PER_SLEEP);
             tmg.slept_block = exec::block_height() as u64;
             msg::reply(TmgEvent::Slept, 0).expect("Not slept correctly");
         }
         TmgAction::Feed => {
             tmg.update_fed();
-            tmg.fed += FILL_PER_FEED;
+            let _ = tmg.fed.saturating_add(FILL_PER_FEED);
             tmg.fed_block = exec::block_height() as u64;
             msg::reply(TmgEvent::Fed, 0).expect("Not fed correctly");
         }
         TmgAction::Entertain => {
             tmg.update_entertained();
-            tmg.entertained += FILL_PER_ENTERTAINMENT;
+            let _ = tmg.entertained.saturating_add(FILL_PER_ENTERTAINMENT);
             tmg.entertained_block = exec::block_height() as u64;
             msg::reply(TmgEvent::Entertained, 0).expect("Not entertained correctly");
         }
