@@ -42,7 +42,8 @@ extern fn handle() {
     };
     match input_msg {
         TmgAction::Name => {
-            msg::reply(TmgEvent::Name(tmg.name.clone()), 0).expect("Error replying to the Name action");
+            msg::reply(TmgEvent::Name(tmg.name.clone()), 0)
+                .expect("Error replying to the Name action");
         }
         TmgAction::Age => {
             msg::reply(
