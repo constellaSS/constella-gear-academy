@@ -1,6 +1,7 @@
 #![no_std]
 
 use gmeta::{In, InOut, Metadata, Out};
+use gstd::ActorId;
 use gstd::prelude::*;
 
 #[derive(Default, Encode, Decode, TypeInfo)]
@@ -11,6 +12,13 @@ pub struct Tamagotchi {
     pub name: String,
     pub date_of_birth: u64,
     // TODO: 1️⃣ Add new fields
+    pub owner: ActorId,
+    pub fed: u64,
+    pub fed_block: u64,
+    pub entertained: u64,
+    pub entertained_block: u64,
+    pub slept: u64,
+    pub slept_block: u64,
 }
 
 #[derive(Encode, Decode, TypeInfo)]
