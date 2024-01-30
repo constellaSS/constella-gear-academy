@@ -6,6 +6,7 @@ use gstd::prelude::*;
 #[no_mangle]
 extern fn init() {
     // TODO: 5️⃣ Initialize the Tamagotchi program
+    // TEST
 }
 
 #[no_mangle]
