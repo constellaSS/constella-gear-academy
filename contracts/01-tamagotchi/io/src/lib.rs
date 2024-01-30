@@ -18,6 +18,8 @@ pub struct Tamagotchi {
 #[scale_info(crate = gstd::scale_info)]
 pub enum TmgAction {
     // TODO: 2️⃣ Add `Name` and `Age` actions that set the name and age
+    Name,
+    Age,
 }
 
 #[derive(Encode, Decode, TypeInfo)]
