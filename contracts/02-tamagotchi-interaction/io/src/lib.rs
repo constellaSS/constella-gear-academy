@@ -26,21 +26,19 @@ pub struct Tamagotchi {
 
 impl Tamagotchi {
     pub fn update_slept(&mut self) {
-        self.slept = self.slept.saturating_sub(
-            self.slept_block.saturating_sub(exec::block_height() as u64) * ENERGY_PER_BLOCK,
-        );
+        self.slept = self
+            .slept
+            .saturating_sub((self.slept_block - exec::block_height() as u64) * ENERGY_PER_BLOCK);
     }
     pub fn update_entertained(&mut self) {
         self.entertained = self.entertained.saturating_sub(
-            self.entertained_block
-                .saturating_sub(exec::block_height() as u64)
-                * BOREDOM_PER_BLOCK,
+            (self.entertained_block - exec::block_height() as u64) * BOREDOM_PER_BLOCK,
         );
     }
     pub fn update_fed(&mut self) {
-        self.fed = self.fed.saturating_sub(
-            self.fed_block.saturating_sub(exec::block_height() as u64) * HUNGER_PER_BLOCK,
-        );
+        self.fed = self
+            .fed
+            .saturating_sub((self.fed_block - exec::block_height() as u64) * HUNGER_PER_BLOCK);
     }
 }
 
