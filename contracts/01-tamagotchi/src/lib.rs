@@ -34,7 +34,7 @@ extern fn handle() {
         }
         TmgAction::Age => {
             msg::reply(
-                TmgEvent::Age(exec::block_timestamp() - tmg.date_of_birth),
+                TmgEvent::Age(exec::block_timestamp().saturating_sub(tmg.date_of_birth)),
                 0,
             )
             .expect("Age not loaded correctly");
