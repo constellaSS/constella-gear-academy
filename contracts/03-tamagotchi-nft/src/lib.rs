@@ -73,7 +73,7 @@ extern fn handle() {
         }
         TmgAction::Transfer(new_owner) => {
             let source = msg::source();
-            if source != tmg.owner || source != tmg.approved_account.unwrap() {
+            if source != tmg.owner && source != tmg.approved_account.unwrap() {
                 panic!("Transfer function is only available to the owner of the Tamagotchi or to the approved account");
             }
             tmg.owner = new_owner;
