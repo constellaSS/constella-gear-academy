@@ -63,9 +63,31 @@ extern fn handle() {
             tmg.entertain();
             msg::reply(TmgEvent::Entertained, 0).expect("Error replying to the Entertain action");
         }
-        TmgAction::Approve(_approved_account) => {}
-        TmgAction::Transfer(_new_owner) => {}
-        TmgAction::RevokeApproval => {}
+        TmgAction::Approve(approved_account) => {
+            if msg::source() != tmg.owner {
+                panic!("Approve function is only available to the current owner of the Tamagotchi");
+            }
+            tmg.approved_account = Some(approved_account);
+            msg::reply(TmgEvent::Approved(tmg.approved_account.unwrap()), 0)
+                .expect("Error in sending Approved Event message");
+        }
+        TmgAction::Transfer(new_owner) => {
+            let source = msg::source();
+            if source != tmg.owner || source != tmg.approved_account.unwrap() {
+                panic!("Transfer function is only available to the owner of the Tamagotchi or to the approved account");
+            }
+            tmg.owner = new_owner;
+            msg::reply(TmgEvent::Transferred(tmg.owner), 0)
+                .expect("Error in sending Transferred Event message");
+        }
+        TmgAction::RevokeApproval => {
+            if msg::source() != tmg.owner {
+                panic!("Approve function is only available to the current owner of the Tamagotchi");
+            }
+            tmg.approved_account = None;
+            msg::reply(TmgEvent::ApprovalRevoked, 0)
+                .expect("Error in sending ApprovalRevoked Event message");
+        }
     }
 }
 
