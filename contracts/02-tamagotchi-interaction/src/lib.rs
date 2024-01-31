@@ -2,14 +2,9 @@
 
 #[allow(unused_imports)]
 use gstd::{exec, msg, prelude::*};
-use tamagotchi_interaction_io::{Tamagotchi, TmgAction, TmgEvent};
+use tamagotchi_interaction_io::{Tamagotchi, TmgAction, TmgEvent, MAX_STATUS_TMG_VALUE};
 
 static mut TAMAGOTCHI: Option<Tamagotchi> = None;
-
-// TODO: 4️⃣ Define constants
-const FILL_PER_FEED: u64 = 1000;
-const FILL_PER_ENTERTAINMENT: u64 = 1000;
-const FILL_PER_SLEEP: u64 = 1000;
 
 #[no_mangle]
 extern fn init() {
@@ -20,11 +15,11 @@ extern fn init() {
         name,
         date_of_birth: exec::block_timestamp(),
         owner: msg::source(),
-        fed: FILL_PER_SLEEP,
+        fed: MAX_STATUS_TMG_VALUE,
         fed_block: exec::block_height() as u64,
-        entertained: FILL_PER_ENTERTAINMENT,
+        entertained: MAX_STATUS_TMG_VALUE,
         entertained_block: exec::block_height() as u64,
-        slept: FILL_PER_SLEEP,
+        slept: MAX_STATUS_TMG_VALUE,
         slept_block: exec::block_height() as u64,
     };
 
@@ -55,20 +50,17 @@ extern fn handle() {
         // TODO: 5️⃣ Add new logic for calculating the `fed`, `entertained` and `slept` levels
         TmgAction::Sleep => {
             tmg.update_slept();
-            tmg.slept = tmg.slept.saturating_add(FILL_PER_SLEEP);
-            tmg.slept_block = exec::block_height() as u64;
+            tmg.sleep();
             msg::reply(TmgEvent::Slept, 0).expect("Error replying to the Sleep action");
         }
         TmgAction::Feed => {
             tmg.update_fed();
-            tmg.fed = tmg.fed.saturating_add(FILL_PER_FEED);
-            tmg.fed_block = exec::block_height() as u64;
+            tmg.feed();
             msg::reply(TmgEvent::Fed, 0).expect("Error replying to the Feed action");
         }
         TmgAction::Entertain => {
             tmg.update_entertained();
-            tmg.entertained = tmg.entertained.saturating_add(FILL_PER_ENTERTAINMENT);
-            tmg.entertained_block = exec::block_height() as u64;
+            tmg.entertain();
             msg::reply(TmgEvent::Entertained, 0).expect("Error replying to the Entertain action");
         }
     }
