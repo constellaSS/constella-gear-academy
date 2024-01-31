@@ -21,6 +21,7 @@ extern fn init() {
         entertained_block: exec::block_height() as u64,
         slept: MAX_STATUS_TMG_VALUE,
         slept_block: exec::block_height() as u64,
+        approved_account: None,
     };
 
     unsafe { TAMAGOTCHI = Some(tamagotchi) }
@@ -62,6 +63,9 @@ extern fn handle() {
             tmg.entertain();
             msg::reply(TmgEvent::Entertained, 0).expect("Error replying to the Entertain action");
         }
+        TmgAction::Approve(_approved_account) => {}
+        TmgAction::Transfer(_new_owner) => {}
+        TmgAction::RevokeApproval => {}
     }
 }
 

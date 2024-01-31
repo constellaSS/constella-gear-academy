@@ -26,6 +26,7 @@ pub struct Tamagotchi {
     pub slept: u64,
     pub slept_block: u64,
     // TODO: 1️⃣ Add new fields
+    pub approved_account: Option<ActorId>,
 }
 
 impl Tamagotchi {
@@ -99,6 +100,9 @@ pub enum TmgAction {
     Entertain,
     Sleep,
     // TODO: 2️⃣ Add new actions
+    Transfer(ActorId),
+    Approve(ActorId),
+    RevokeApproval,
 }
 
 #[derive(Encode, Decode, TypeInfo)]
@@ -112,6 +116,9 @@ pub enum TmgEvent {
     Entertained,
     Slept,
     // TODO: 3️⃣ Add new events
+    Transferred(ActorId),
+    Approved(ActorId),
+    ApprovalRevoked,
 }
 
 pub struct ProgramMetadata;
