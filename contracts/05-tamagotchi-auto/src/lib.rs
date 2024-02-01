@@ -26,6 +26,7 @@ extern fn init() {
         ft_contract_id: Default::default(),
         transaction_id: 0,
         approve_transaction: None,
+        reservations: Default::default(),
     };
 
     unsafe { TAMAGOTCHI = Some(tamagotchi) }
@@ -102,6 +103,11 @@ async fn main() {
             store_id,
             attribute_id,
         } => Tamagotchi::buy_attribute(store_id, attribute_id).await,
+        TmgAction::CheckState => {}
+        TmgAction::ReserveGas {
+            reservation_amount: _,
+            duration: _,
+        } => {}
     }
 }
 

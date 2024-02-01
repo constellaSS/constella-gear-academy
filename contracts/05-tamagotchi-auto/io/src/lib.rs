@@ -1,7 +1,7 @@
 #![no_std]
 
 use gmeta::{In, InOut, Metadata, Out};
-use gstd::{exec, msg, prelude::*, ActorId};
+use gstd::{exec, msg, prelude::*, ActorId, ReservationId};
 use sharded_fungible_token_io::{FTokenAction, FTokenEvent, LogicAction};
 use store_io::{AttributeId, StoreAction, StoreEvent, TransactionId};
 
@@ -32,6 +32,7 @@ pub struct Tamagotchi {
     pub transaction_id: TransactionId,
     pub approve_transaction: Option<(TransactionId, ActorId, u128)>,
     // TODO: 1️⃣ Add new fields
+    pub reservations: Vec<ReservationId>,
 }
 
 impl Tamagotchi {
@@ -172,6 +173,11 @@ pub enum TmgAction {
         attribute_id: AttributeId,
     },
     // TODO: 2️⃣ Add new actions
+    CheckState,
+    ReserveGas {
+        reservation_amount: u64,
+        duration: u32,
+    },
 }
 
 #[derive(Encode, Decode, TypeInfo)]
@@ -194,6 +200,11 @@ pub enum TmgEvent {
     CompletePrevPurchase,
     ErrorDuringPurchase,
     // TODO: 3️⃣ Add new events
+    FeedMe,
+    PlayWithMe,
+    WantToSleep,
+    MakeReservation,
+    GasReserved,
 }
 
 pub struct ProgramMetadata;
