@@ -150,15 +150,14 @@ impl Tamagotchi {
         };
     }
     pub fn get_reservation_or_ask_for_new(&mut self) -> Option<ReservationId> {
-        let reservation_id = if !self.reservations.is_empty() {
+        if !self.reservations.is_empty() {
             Some(self.reservations.remove(0))
         } else {
             // Ask to make a new gas reservation
             msg::send(self.owner, TmgEvent::MakeReservation, 0)
                 .expect("Error in sending message `TmgEvent::MakeReservation`");
             None
-        };
-        reservation_id
+        }
     }
     pub fn check_tmg_state(&mut self) {
         if let Some(reservation_id) = self.get_reservation_or_ask_for_new() {
