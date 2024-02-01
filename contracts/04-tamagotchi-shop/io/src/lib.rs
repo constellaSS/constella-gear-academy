@@ -2,6 +2,7 @@
 
 use gmeta::{In, InOut, Metadata, Out};
 use gstd::{exec, prelude::*, ActorId};
+use store_io::{AttributeId, TransactionId};
 
 pub const MAX_STATUS_TMG_VALUE: u64 = 10_000;
 const HUNGER_PER_BLOCK: u64 = 1;
@@ -27,6 +28,9 @@ pub struct Tamagotchi {
     pub slept_block: u64,
     pub approved_account: Option<ActorId>,
     // TODO: 2️⃣ Add new fields
+    pub ft_contract_id: ActorId,
+    pub transaction_id: u64,
+    pub approve_transaction: Option<(TransactionId, ActorId, u128)>,
 }
 
 impl Tamagotchi {
@@ -103,6 +107,15 @@ pub enum TmgAction {
     Approve(ActorId),
     RevokeApproval,
     // TODO: 3️⃣ Add new actions
+    SetFTokenContract(ActorId),
+    ApproveTokens {
+        account: ActorId,
+        amount: u128,
+    },
+    BuyAttribute {
+        store_id: ActorId,
+        attribute_id: AttributeId,
+    },
 }
 
 #[derive(Encode, Decode, TypeInfo)]
@@ -119,6 +132,12 @@ pub enum TmgEvent {
     Approved(ActorId),
     ApprovalRevoked,
     // TODO: 4️⃣ Add new events
+    FTokenContractSet,
+    TokensApproved,
+    ApprovalError,
+    AttributeBought,
+    CompletePrevPurchase,
+    ErrorDuringPurchase,
 }
 
 pub struct ProgramMetadata;

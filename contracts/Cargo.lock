@@ -5750,6 +5750,7 @@ version = "0.3.3"
 dependencies = [
  "gmeta",
  "gstd",
+ "store-io",
 ]
 
 [[package]]

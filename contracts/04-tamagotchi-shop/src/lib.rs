@@ -24,6 +24,9 @@ extern fn init() {
         slept: MAX_STATUS_TMG_VALUE,
         slept_block: exec::block_height() as u64,
         approved_account: None,
+        ft_contract_id: Default::default(),
+        transaction_id: 0,
+        approve_transaction: None,
     };
 
     unsafe { TAMAGOTCHI = Some(tamagotchi) }
@@ -89,7 +92,17 @@ extern fn handle() {
             tmg.approved_account = None;
             msg::reply(TmgEvent::ApprovalRevoked, 0)
                 .expect("Error in sending ApprovalRevoked Event message");
-        } // TODO; 6️⃣ Add handling new actions
+        }
+        // TODO; 6️⃣ Add handling new actions
+        TmgAction::SetFTokenContract(_ft_contract_address) => {}
+        TmgAction::ApproveTokens {
+            account: _,
+            amount: _,
+        } => {}
+        TmgAction::BuyAttribute {
+            store_id: _,
+            attribute_id: _,
+        } => {}
     }
 }
 
