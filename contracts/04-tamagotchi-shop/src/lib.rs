@@ -95,12 +95,16 @@ async fn main() {
                 .expect("Error in sending ApprovalRevoked Event message");
         }
         // TODO; 6️⃣ Add handling new actions
-        TmgAction::SetFTokenContract(_ft_contract_address) => {}
+        TmgAction::SetFTokenContract(ft_contract_id) => {
+            tmg.ft_contract_id = ft_contract_id;
+            msg::reply(TmgEvent::FTokenContractSet, 0)
+                .expect("Error replying to the SetFTokenContract Action");
+        }
         TmgAction::ApproveTokens { account, amount } => tmg.approve_tokens(&account, amount).await,
         TmgAction::BuyAttribute {
-            store_id: _,
-            attribute_id: _,
-        } => {}
+            store_id,
+            attribute_id,
+        } => Tamagotchi::buy_attribute(store_id, attribute_id).await,
     }
 }
 

@@ -3,7 +3,7 @@
 use gmeta::{In, InOut, Metadata, Out};
 use gstd::{exec, msg, prelude::*, ActorId};
 use sharded_fungible_token_io::{FTokenAction, FTokenEvent, LogicAction};
-use store_io::{AttributeId, TransactionId};
+use store_io::{AttributeId, StoreAction, StoreEvent, TransactionId};
 
 pub const MAX_STATUS_TMG_VALUE: u64 = 10_000;
 const HUNGER_PER_BLOCK: u64 = 1;
@@ -118,6 +118,33 @@ impl Tamagotchi {
             },
             Err(_) => msg::reply(TmgEvent::ApprovalError, 0)
                 .expect("Error replying to ApproveTokens action"),
+        };
+    }
+    pub async fn buy_attribute(store_id: ActorId, attribute_id: AttributeId) {
+        let res = msg::send_for_reply_as::<_, StoreEvent>(
+            store_id,
+            StoreAction::BuyAttribute { attribute_id },
+            0,
+            0,
+        )
+        .expect("Error sending `StoreAction::BuyAttribute`")
+        .await;
+
+        match res {
+            Ok(event) => match event {
+                StoreEvent::AttributeSold { success: _ } => {
+                    msg::reply(TmgEvent::AttributeBought, 0)
+                        .expect("Error replying to BuyAttribute Action")
+                }
+                StoreEvent::CompletePrevTx { attribute_id: _ } => {
+                    msg::reply(TmgEvent::CompletePrevPurchase, 0)
+                        .expect("Error replying to CompletePrevTx Store Event")
+                }
+                _ => msg::reply(TmgEvent::ErrorDuringPurchase, 0)
+                    .expect("Unexpected event received during purchase"),
+            },
+            Err(_) => msg::reply(TmgEvent::ErrorDuringPurchase, 0)
+                .expect("Error handling response during purchase"),
         };
     }
 }
