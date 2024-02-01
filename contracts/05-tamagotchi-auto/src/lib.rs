@@ -1,9 +1,9 @@
 #![no_std]
 
-use gstd::{async_main, msg};
+use gstd::{async_main, msg, ReservationId};
 #[allow(unused_imports)]
 use gstd::{exec, prelude::*};
-use tamagotchi_auto_io::{Tamagotchi, TmgAction, TmgEvent, MAX_STATUS_TMG_VALUE};
+use tamagotchi_auto_io::{Tamagotchi, TmgAction, TmgEvent, MAX_STATUS_TMG_VALUE, ONE_MINUTE_DELAY};
 
 static mut TAMAGOTCHI: Option<Tamagotchi> = None;
 
@@ -28,6 +28,15 @@ extern fn init() {
         approve_transaction: None,
         reservations: Default::default(),
     };
+
+    // Send an initial delayed message with the action CheckState;
+    msg::send_delayed(
+        exec::program_id(),
+        TmgAction::CheckState,
+        0,
+        ONE_MINUTE_DELAY,
+    )
+    .expect("Error in sending initial CheckState action message");
 
     unsafe { TAMAGOTCHI = Some(tamagotchi) }
 }
@@ -103,11 +112,43 @@ async fn main() {
             store_id,
             attribute_id,
         } => Tamagotchi::buy_attribute(store_id, attribute_id).await,
-        TmgAction::CheckState => {}
+        TmgAction::CheckState => {
+            // Check the state and send a corresponding message if it's needed to (FeedMe, PlayWithMe, etc)
+            tmg.update_fed();
+            if tmg.fed <= 1 {
+                if let Some(reservation_id) = tmg.get_reservation_or_ask_for_new() {
+                    msg::send_from_reservation(reservation_id, tmg.owner, TmgEvent::FeedMe, 0)
+                        .expect("Error in sending message to Tamagotchi owner asking to feed it");
+                }
+            }
+
+            tmg.update_entertained();
+            if tmg.entertained <= 1 {
+                if let Some(reservation_id) = tmg.get_reservation_or_ask_for_new() {
+                    msg::send_from_reservation(reservation_id, tmg.owner, TmgEvent::PlayWithMe, 0)
+                        .expect("Error in sending message to Tamagotchi owner asking to feed it");
+                }
+            }
+
+            tmg.update_slept();
+            if tmg.slept <= 1 {
+                if let Some(reservation_id) = tmg.get_reservation_or_ask_for_new() {
+                    msg::send_from_reservation(reservation_id, tmg.owner, TmgEvent::WantToSleep, 0)
+                        .expect("Error in sending message to Tamagotchi owner asking to feed it");
+                }
+            }
+
+            // Send another delayed message to keep checking the state
+            tmg.check_tmg_state();
+        }
         TmgAction::ReserveGas {
-            reservation_amount: _,
-            duration: _,
-        } => {}
+            reservation_amount,
+            duration,
+        } => {
+            let reservation_id =
+                ReservationId::reserve(reservation_amount, duration).expect("Error reserving gas");
+            tmg.reservations.push(reservation_id);
+        }
     }
 }
 

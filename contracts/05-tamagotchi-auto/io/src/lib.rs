@@ -6,6 +6,7 @@ use sharded_fungible_token_io::{FTokenAction, FTokenEvent, LogicAction};
 use store_io::{AttributeId, StoreAction, StoreEvent, TransactionId};
 
 pub const MAX_STATUS_TMG_VALUE: u64 = 10_000;
+pub const ONE_MINUTE_DELAY: u32 = 20;
 const HUNGER_PER_BLOCK: u64 = 1;
 const BOREDOM_PER_BLOCK: u64 = 2;
 const ENERGY_PER_BLOCK: u64 = 2;
@@ -147,6 +148,29 @@ impl Tamagotchi {
             Err(_) => msg::reply(TmgEvent::ErrorDuringPurchase, 0)
                 .expect("Error handling response during purchase"),
         };
+    }
+    pub fn get_reservation_or_ask_for_new(&mut self) -> Option<ReservationId> {
+        let reservation_id = if !self.reservations.is_empty() {
+            Some(self.reservations.remove(0))
+        } else {
+            // Ask to make a new gas reservation
+            msg::send(self.owner, TmgEvent::MakeReservation, 0)
+                .expect("Error in sending message `TmgEvent::MakeReservation`");
+            None
+        };
+        reservation_id
+    }
+    pub fn check_tmg_state(&mut self) {
+        if let Some(reservation_id) = self.get_reservation_or_ask_for_new() {
+            msg::send_delayed_from_reservation(
+                reservation_id,
+                exec::program_id(),
+                TmgAction::CheckState,
+                0,
+                ONE_MINUTE_DELAY,
+            )
+            .expect("Error in sending subsequent CheckState action message");
+        }
     }
 }
 
