@@ -1,7 +1,8 @@
 #![no_std]
 
 use gmeta::{In, InOut, Metadata, Out};
-use gstd::{exec, prelude::*, ActorId};
+use gstd::{exec, msg, prelude::*, ActorId};
+use sharded_fungible_token_io::{FTokenAction, FTokenEvent, LogicAction};
 use store_io::{AttributeId, TransactionId};
 
 pub const MAX_STATUS_TMG_VALUE: u64 = 10_000;
@@ -90,6 +91,34 @@ impl Tamagotchi {
             self.fed = new_fed;
         }
         self.fed_block = exec::block_height() as u64;
+    }
+    pub async fn approve_tokens(&mut self, account: &ActorId, amount: u128) {
+        let res = msg::send_for_reply_as::<_, FTokenEvent>(
+            self.ft_contract_id,
+            FTokenAction::Message {
+                transaction_id: self.transaction_id,
+                payload: LogicAction::Approve {
+                    approved_account: *account,
+                    amount,
+                },
+            },
+            0,
+            0,
+        )
+        .expect("Error in sending a message `FTokenAction::Message`")
+        .await;
+        match res {
+            Ok(event) => match event {
+                FTokenEvent::Ok => msg::reply(TmgEvent::TokensApproved, 0)
+                    .expect("Error replying to ApproveTokens action"),
+                FTokenEvent::Err => msg::reply(TmgEvent::ApprovalError, 0)
+                    .expect("Error replying to ApproveTokens action"),
+                _ => msg::reply(TmgEvent::ApprovalError, 0)
+                    .expect("Error replying to ApproveTokens action"),
+            },
+            Err(_) => msg::reply(TmgEvent::ApprovalError, 0)
+                .expect("Error replying to ApproveTokens action"),
+        };
     }
 }
 

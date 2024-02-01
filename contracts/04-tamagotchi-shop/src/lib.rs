@@ -1,5 +1,6 @@
 #![no_std]
 
+use gstd::async_main;
 #[allow(unused_imports)]
 use gstd::{exec, msg, prelude::*};
 use tamagotchi_shop_io::{Tamagotchi, TmgAction, TmgEvent, MAX_STATUS_TMG_VALUE};
@@ -32,8 +33,8 @@ extern fn init() {
     unsafe { TAMAGOTCHI = Some(tamagotchi) }
 }
 
-#[no_mangle]
-extern fn handle() {
+#[async_main]
+async fn main() {
     // TODO: 0️⃣ Copy the `handle` function from the previous lesson and push changes to the master branch
     let input_msg = msg::load().expect("Error in loading Tmg Input Message");
     let tmg = unsafe {
@@ -95,10 +96,7 @@ extern fn handle() {
         }
         // TODO; 6️⃣ Add handling new actions
         TmgAction::SetFTokenContract(_ft_contract_address) => {}
-        TmgAction::ApproveTokens {
-            account: _,
-            amount: _,
-        } => {}
+        TmgAction::ApproveTokens { account, amount } => tmg.approve_tokens(&account, amount).await,
         TmgAction::BuyAttribute {
             store_id: _,
             attribute_id: _,
