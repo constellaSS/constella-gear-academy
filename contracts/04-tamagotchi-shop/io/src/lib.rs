@@ -107,16 +107,11 @@ impl Tamagotchi {
         )
         .expect("Error in sending a message `FTokenAction::Message`")
         .await;
+
         match res {
-            Ok(event) => match event {
-                FTokenEvent::Ok => msg::reply(TmgEvent::TokensApproved, 0)
-                    .expect("Error replying to ApproveTokens action"),
-                FTokenEvent::Err => msg::reply(TmgEvent::ApprovalError, 0)
-                    .expect("Error replying to ApproveTokens action"),
-                _ => msg::reply(TmgEvent::ApprovalError, 0)
-                    .expect("Error replying to ApproveTokens action"),
-            },
-            Err(_) => msg::reply(TmgEvent::ApprovalError, 0)
+            Ok(FTokenEvent::Ok) => msg::reply(TmgEvent::TokensApproved, 0)
+                .expect("Error replying to ApproveTokens action"),
+            Ok(_) | Err(_) => msg::reply(TmgEvent::ApprovalError, 0)
                 .expect("Error replying to ApproveTokens action"),
         };
     }
@@ -131,20 +126,16 @@ impl Tamagotchi {
         .await;
 
         match res {
-            Ok(event) => match event {
-                StoreEvent::AttributeSold { success: _ } => {
-                    msg::reply(TmgEvent::AttributeBought, 0)
-                        .expect("Error replying to BuyAttribute Action")
-                }
-                StoreEvent::CompletePrevTx { attribute_id: _ } => {
-                    msg::reply(TmgEvent::CompletePrevPurchase, 0)
-                        .expect("Error replying to CompletePrevTx Store Event")
-                }
-                _ => msg::reply(TmgEvent::ErrorDuringPurchase, 0)
-                    .expect("Unexpected event received during purchase"),
-            },
-            Err(_) => msg::reply(TmgEvent::ErrorDuringPurchase, 0)
-                .expect("Error handling response during purchase"),
+            Ok(StoreEvent::AttributeSold { success: _ }) => {
+                msg::reply(TmgEvent::AttributeBought, 0)
+                    .expect("Error replying to BuyAttribute Action")
+            }
+            Ok(StoreEvent::CompletePrevTx { attribute_id: _ }) => {
+                msg::reply(TmgEvent::CompletePrevPurchase, 0)
+                    .expect("Error replying to CompletePrevTx Store Event")
+            }
+            Ok(_) | Err(_) => msg::reply(TmgEvent::ErrorDuringPurchase, 0)
+                .expect("Unexpected event received during purchase"),
         };
     }
 }
@@ -202,8 +193,8 @@ pub struct ProgramMetadata;
 impl Metadata for ProgramMetadata {
     type Init = In<String>;
     type Handle = InOut<TmgAction, TmgEvent>;
-    type State = Out<Tamagotchi>;
     type Reply = ();
     type Others = ();
     type Signal = ();
+    type State = Out<Tamagotchi>;
 }
