@@ -1,19 +1,25 @@
 #![no_std]
+use gstd::{msg, prelude::*, CodeId};
+use tamagotchi_army_io::{FactoryAction, TamagotchiFactory};
 
-#[allow(unused_imports)]
-use gstd::prelude::*;
+static mut ESCROW_FACTORY: Option<TamagotchiFactory> = None;
+
+#[gstd::async_main]
+async fn main() {
+    let action: FactoryAction = msg::load().expect("Unable to decode `FactoryAction`");
+    let factory = unsafe { ESCROW_FACTORY.get_or_insert(Default::default()) };
+    match action {
+        FactoryAction::CreateTamagotchi { name } => factory.create_tamagotchi(name).await,
+    }
+}
 
 #[no_mangle]
 extern fn init() {
-    // TODO: 0️⃣ Copy the `init` function from the previous lesson and push changes to the master branch
-}
-
-#[no_mangle]
-extern fn handle() {
-    // TODO: 0️⃣ Copy the `handle` function from the previous lesson and push changes to the master branch
-}
-
-#[no_mangle]
-extern fn state() {
-    // TODO: 0️⃣ Copy the `handle` function from the previous lesson and push changes to the master branch
+    let escrow_code_id: CodeId =
+        msg::load().expect("Unable to decode CodeId of the Escrow program");
+    let escrow_factory = TamagotchiFactory {
+        tamagotchi_code_id: escrow_code_id,
+        ..Default::default()
+    };
+    unsafe { ESCROW_FACTORY = Some(escrow_factory) };
 }
